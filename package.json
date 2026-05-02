@@ -1,0 +1,15 @@
+{
+  "name": "videoextractor-discordui",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Ksawix",
+  "type": "commonjs",
+  "main": "main.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "discord.js": "^14.26.4"
+  }
+}
