@@ -11,7 +11,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     if (!interaction.inGuild()){
         await interaction.reply({content: "Cleaning-up this mess..", flags: MessageFlags.Ephemeral});
         (await(await interaction.user.createDM()).messages.fetch({limit: interaction.options.getInteger("quantity")?? 0}))
-            .filter((value, key) => {return value.author.id == interaction.client.user.id})
+            .filter((value) => {return value.author.id == interaction.client.user.id})
             .forEach(async (value) => {await value.delete()})
         await interaction.deleteReply();
     }else{

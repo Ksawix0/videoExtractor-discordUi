@@ -1,9 +1,8 @@
 import {AttachmentBuilder, Message, type OmitPartialGroupDMChannel} from "discord.js";
 import {type videoUrls, extractInstagramUrl, mergeVideoAudioUrl} from "../../modules/videoExtract-api.ts";
 import type {Readable} from "stream";
-import {chromium} from "playwright-core";
 
-export async function getVideo(message :  OmitPartialGroupDMChannel<Message<boolean>>, retry: boolean = false){
+export async function getVideo(message :  OmitPartialGroupDMChannel<Message<boolean>>){
 
     const initialMessage = await message.reply("Working on it..");
     switch ((new RegExp("^(?:http://|https://)([^/]*).*").exec(message.content)?? ["",""])[1]) {

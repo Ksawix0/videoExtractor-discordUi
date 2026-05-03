@@ -86,7 +86,7 @@ client.once(Events.ClientReady, (readyClient : Client<true>) => {
 client.on(Events.InteractionCreate, async (interaction) => {
     //? Chat commands handler
     if (interaction.isChatInputCommand()){
-        const command = interaction.client.commands.filter((value, key) => {return value.data.type == 1 || value.data.type == undefined }).get(interaction.commandName);
+        const command = interaction.client.commands.filter((value) => {return value.data.type == 1 || value.data.type == undefined }).get(interaction.commandName);
         if (command == undefined) {
             console.error(`No chat command matching ${interaction.commandName} was found.`);
             return;
@@ -109,7 +109,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         }
     //? Context menu commands handler
     }else if (interaction.isContextMenuCommand()){
-        const command = interaction.client.commands.filter((value, key) => {return value.data.type !=1 }).get(interaction.commandName);
+        const command = interaction.client.commands.filter((value) => {return value.data.type !=1 }).get(interaction.commandName);
         if (command == undefined) {
             console.error(`No context command matching ${interaction.commandName} was found.`);
             return;
@@ -142,4 +142,4 @@ client.on(Events.MessageCreate, async (message) => {
      }
 })
 
-const loginString = client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.DISCORD_TOKEN);
