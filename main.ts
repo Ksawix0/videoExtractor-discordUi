@@ -1,16 +1,48 @@
-import {Client, Collection, Events, GatewayIntentBits, MessageFlags} from 'discord.js';
+import {
+    ApplicationCommandType,
+    Client,
+    Collection,
+    Events,
+    GatewayIntentBits,
+    MessageFlags,
+    Partials,
+    REST,
+    Routes
+} from 'discord.js';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import {type Browser, type BrowserContext, chromium} from 'playwright-core';
+import {getVideo} from "./commands/responses/getVideo.js";
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+    intents: [
+        // GatewayIntentBits.Guilds,
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.MessageContent
+    ],
+    partials: [
+        Partials.Channel
+    ]
+});
+
 
 //? import commands
 declare module 'discord.js' {
     interface Client {
         commands : Collection<any, any>
+        browser: Browser
+        browserContext: BrowserContext
     }
 }
 
+console.log("Launching headless browser (chromium)")
+client.browser = await chromium.launch()
+console.log("Successfully launched headless browser, launching browser context")
+client.browserContext = await client.browser.newContext()
+console.log("Successfully launched browser context")
+
+//? gathering info about commands in client.commands and commands[]
+const commands = [];
 client.commands = new Collection();
 const foldersPath = path.join(import.meta.dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
@@ -23,40 +55,91 @@ for (const folder of commandFolders) {
         // Set a new item in the Collection with the key as the command name and the value as the exported module
         if ('data' in command && 'execute' in command) {
             client.commands.set(command.data.name, command);
+            commands.push(command.data.toJSON());
         } else {
             console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
         }
     }
 }
 
+//? register commands
+const rest = new REST().setToken(process.env["DISCORD_TOKEN"]?? "");
+// and deploy your commands!
+(async () => {
+    try {
+        console.log(`Started refreshing ${commands.length} application (/) commands.`);
+
+        // The put method is used to fully refresh all commands in the guild with the current set
+        const data : Array<any> = await rest.put(Routes.applicationCommands(process.env.clientId?? ""), { body: commands }) as Array<any>;
+
+        console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+    } catch (error) {
+        // And of course, make sure you catch and log any errors!
+        console.error(error);
+    }
+})();
+
 client.once(Events.ClientReady, (readyClient : Client<true>) => {
     console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
-    if (!interaction.isChatInputCommand()) return;
-    const command = interaction.client.commands.get(interaction.commandName);
-    if (command == undefined) {
-        console.error(`No command matching ${interaction.commandName} was found.`);
-        return;
-    }
-    try {
-        await command.execute(interaction);
-    } catch (error) {
-        console.error(error);
-        if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({
-                content: 'There was an error while executing this command!',
-                flags: MessageFlags.Ephemeral,
-            });
-        } else {
-            await interaction.reply({
-                content: 'There was an error while executing this command!',
-                flags: MessageFlags.Ephemeral,
-            });
+    //? Chat commands handler
+    if (interaction.isChatInputCommand()){
+        const command = interaction.client.commands.filter((value, key) => {return value.data.type == 1 || value.data.type == undefined }).get(interaction.commandName);
+        if (command == undefined) {
+            console.error(`No chat command matching ${interaction.commandName} was found.`);
+            return;
+        }
+        try {
+            await command.execute(interaction);
+        } catch (error) {
+            console.error(error);
+            if (interaction.replied || interaction.deferred) {
+                await interaction.followUp({
+                    content: 'There was an error while executing this command!',
+                    flags: MessageFlags.Ephemeral,
+                });
+            } else {
+                await interaction.reply({
+                    content: 'There was an error while executing this command!',
+                    flags: MessageFlags.Ephemeral,
+                });
+            }
+        }
+    //? Context menu commands handler
+    }else if (interaction.isContextMenuCommand()){
+        const command = interaction.client.commands.filter((value, key) => {return value.data.type !=1 }).get(interaction.commandName);
+        if (command == undefined) {
+            console.error(`No context command matching ${interaction.commandName} was found.`);
+            return;
+        }
+        try {
+            await command.execute(interaction);
+        } catch (error) {
+            console.error(error);
+            if (interaction.replied || interaction.deferred) {
+                await interaction.followUp({
+                    content: 'There was an error while executing this command!',
+                    flags: MessageFlags.Ephemeral,
+                });
+            } else {
+                await interaction.reply({
+                    content: 'There was an error while executing this command!',
+                    flags: MessageFlags.Ephemeral,
+                });
+            }
         }
     }
 });
 
+client.on(Events.MessageCreate, async (message) => {
+     if(message.channel.partial) { message.channel = await message.channel.fetch() }
+     if(message.channel.isDMBased() && message.author.id != message.client.user.id){
+         if(new RegExp("^(?:http://|https://)").test(message.content)) {
+            await getVideo(message)
+         }
+     }
+})
+
 const loginString = client.login(process.env.DISCORD_TOKEN);
-console.log(loginString);
