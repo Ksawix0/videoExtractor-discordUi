@@ -1,5 +1,5 @@
 import {AttachmentBuilder, Message, type OmitPartialGroupDMChannel} from "discord.js";
-import {type videoUrls, extractInstagramUrl, mergeVideoAudioUrl} from "../../modules/videoExtract-api.js";
+import {type videoUrls, extractInstagramUrl, mergeVideoAudioUrl} from "../../modules/videoExtract-api.ts";
 import type {Readable} from "stream";
 import {chromium} from "playwright-core";
 

@@ -1,6 +1,6 @@
 import {ContextMenuCommandBuilder, ApplicationCommandType, MessageFlags} from 'discord.js';
 import {UserContextMenuCommandInteraction} from "discord.js";
-const confirmationResponse =  (await import('../../assets/confirmation-as-a-service.json')).default;
+const confirmationResponse =  (await import('../../assets/confirmation-as-a-service.json', {with: {type: 'json'}})).default;
 
 export const data = new ContextMenuCommandBuilder()
     .setName('requestDM')

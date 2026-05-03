@@ -12,7 +12,7 @@ import {
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import {type Browser, type BrowserContext, chromium} from 'playwright-core';
-import {getVideo} from "./commands/responses/getVideo.js";
+import {getVideo} from "./commands/responses/getVideo.ts";
 
 const client = new Client({
     intents: [
