@@ -18,7 +18,7 @@ export async function extractInstagramUrl(context: BrowserContext, url: string):
     const page = await context.newPage();
 
     // The actual interesting bit
-
+    let extracted: boolean = false
     const reqExtraction =  new Promise((Resolve) => {
         page.on('request', (request) => {
             if( new RegExp(".*&bytestart=\\d*&byteend=\\d*$").test(request.url()) ){
@@ -31,11 +31,17 @@ export async function extractInstagramUrl(context: BrowserContext, url: string):
                 else if(lastUrl != cleanUrl && lastUrl != "end" && cleanUrl != "null"){
                     output.audioUrl = cleanUrl;
                     lastUrl = "end"
+                    extracted = true
                     Resolve("");
                 }
             }
         });
     })
+
+    await page.route("**.*", (route) => {
+        if(extracted){route.abort()}else{route.continue()}
+    })
+
     await page.goto(url);
     await reqExtraction
 
