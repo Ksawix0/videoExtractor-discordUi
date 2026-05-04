@@ -50,7 +50,7 @@ export async function mergeVideoAudioUrl(videoUrl: string, audioUrl: string, fun
         '-c:a', 'copy',
         '-map', '0:v',
         '-map', '1:a',
-        '-loglevel', 'error',
+        '-loglevel', 'info',
         '-f', 'mp4',
         '-movflags', 'frag_keyframe+empty_moov',
         'pipe:1'
