@@ -50,10 +50,13 @@ export async function mergeVideoAudioUrl(videoUrl: string, audioUrl: string, fun
         '-c:a', 'copy',
         '-map', '0:v',
         '-map', '1:a',
+        '-loglevel', 'error',
         '-f', 'mp4',
         '-movflags', 'frag_keyframe+empty_moov',
         'pipe:1'
     ],)
+
+    ffmpeg.stdout.on('error', err => {console.log("[ffmpeg Error] " + err.toString())});
 
     // ffmpeg.stdout.pipe(writeableStream.writeableStream);
     // await new Promise( (res) => writeableStream.writeableStream.on('close', res))
