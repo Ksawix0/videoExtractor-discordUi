@@ -55,7 +55,7 @@ export async function mergeVideoAudioUrl(videoUrl: string, audioUrl: string, fun
         '-movflags', 'frag_keyframe+empty_moov',
         'pipe:1'
     ],)
-
+    console.log("ffmpeg start")
     ffmpeg.stdout.on('error', err => {console.log("[ffmpeg Error] " + err.toString())});
     ffmpeg.stdout.on('data', data => {console.log("[ffmpeg data] " + data.toString())});
 
