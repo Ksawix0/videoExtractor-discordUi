@@ -57,6 +57,7 @@ export async function mergeVideoAudioUrl(videoUrl: string, audioUrl: string, fun
     ],)
 
     ffmpeg.stdout.on('error', err => {console.log("[ffmpeg Error] " + err.toString())});
+    ffmpeg.stdout.on('data', data => {console.log("[ffmpeg data] " + data.toString())});
 
     // ffmpeg.stdout.pipe(writeableStream.writeableStream);
     // await new Promise( (res) => writeableStream.writeableStream.on('close', res))
