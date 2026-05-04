@@ -25,12 +25,11 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=cache,target=/root/.npm \
     npm ci --omit=dev
 
+RUN apt update && apt install -y ffmpeg && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN --mount=type=cache,target=/root/.cache/ms-playwright \
     npx playwright install --with-deps chromium &&\
-    mkdir -p /home/node/.cache/ms-playwright && cp -r /root/.cache/ms-playwright/* /home/node/.cache/ms-playwright && rm -rf /root/.cache
-
-RUN apt update && apt install -y ffmpeg && apt-get clean && rm -rf /var/lib/apt/lists/*
+    mkdir -p /home/node/.cache/ms-playwright && cp -r /root/.cache/ms-playwright/* /home/node/.cache/ms-playwright
 
 # Run the application as a non-root user.
 USER node

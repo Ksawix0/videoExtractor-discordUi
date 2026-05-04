@@ -38,7 +38,7 @@ declare module 'discord.js' {
 console.log("Launching headless browser (chromium)")
 client.browser = await chromium.launch()
 console.log("Successfully launched headless browser, launching browser context")
-client.browserContext = await client.browser.newContext()
+client.browserContext = await client.browser.newContext({viewport: { width: 1920, height: 1080 }, userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"})
 console.log("Successfully launched browser context")
 
 //? gathering info about commands in client.commands and commands[]

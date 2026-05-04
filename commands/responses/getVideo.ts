@@ -7,9 +7,7 @@ export async function getVideo(message :  OmitPartialGroupDMChannel<Message<bool
     const initialMessage = await message.reply("Working on it..");
     switch ((new RegExp("^(?:http://|https://)([^/]*).*").exec(message.content)?? ["",""])[1]) {
         case "www.instagram.com": {
-            const context = await message.client.browser.newContext()
-            const urls : videoUrls = await extractInstagramUrl(context, (new RegExp("^([^?]*)").exec(message.content)![1]!))
-            await context.close()
+            const urls : videoUrls = await extractInstagramUrl(message.client.browserContext, (new RegExp("^([^?]*)").exec(message.content)![1]!))
             await mergeVideoAudioUrl(urls.videoUrl, urls.audioUrl, async (stream : Readable)=>{
                 await message.reply({content: "", files:[new AttachmentBuilder(stream, {name: "video.mp4"})]})
                 await initialMessage.delete()

@@ -19,26 +19,27 @@ export async function extractInstagramUrl(context: BrowserContext, url: string):
 
     // The actual interesting bit
 
-    page.on('request', (request) => {
-        if( new RegExp(".*&bytestart=\\d*&byteend=\\d*$").test(request.url()) ){
+    const reqExtraction =  new Promise((Resolve) => {
+        page.on('request', (request) => {
+            if( new RegExp(".*&bytestart=\\d*&byteend=\\d*$").test(request.url()) ){
 
-            let cleanUrl : string = (new RegExp("(.*)&bytestart=\\d*&byteend=\\d*$").exec(request.url())??["null","null"])[1];
-            if(lastUrl == "" && cleanUrl != "null"){
-                lastUrl = cleanUrl;
-                output.videoUrl = cleanUrl;
+                let cleanUrl : string = (new RegExp("(.*)&bytestart=\\d*&byteend=\\d*$").exec(request.url())??["null","null"])[1];
+                if(lastUrl == "" && cleanUrl != "null"){
+                    lastUrl = cleanUrl;
+                    output.videoUrl = cleanUrl;
+                }
+                else if(lastUrl != cleanUrl && lastUrl != "end" && cleanUrl != "null"){
+                    output.audioUrl = cleanUrl;
+                    lastUrl = "end"
+                    Resolve("");
+                }
             }
-            else if(lastUrl != cleanUrl && lastUrl != "end" && cleanUrl != "null"){
-                output.audioUrl = cleanUrl;
-                lastUrl = "end"
-                page.close();
-            }
-        }
-
-    });
-    
+        });
+    })
     await page.goto(url);
-    await new Promise(async (res) => {page.on('close', res)})
+    await reqExtraction
 
+    await page.close();
     return output;
 }
 
