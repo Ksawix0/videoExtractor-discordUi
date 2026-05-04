@@ -20,20 +20,4 @@ export async function getVideo(message :  OmitPartialGroupDMChannel<Message<bool
             await initialMessage.delete();
         }
     }
-
-    // }catch (err) {
-    //     const error : Error = (err as Error)
-    //     if (error.message.startsWith("page.goto: Target page, context or browser has been closed") && !retry){
-    //         await initialMessage.edit(`Error occurred: Target page, \'context or browser has been closed\' retrying..`)
-    //         console.log(`Error -has been closed- context: ${!message.client.browserContext.isClosed()}; browser ${!message.client.browserContext.isClosed()}`);
-    //         await message.client.browser.close()
-    //         message.client.browser = await chromium.launch();
-    //         message.client.browserContext = await message.client.browser.newContext();
-    //         await getVideo(message, true)
-    //
-    //     }else{
-    //         console.log(`Error -has been closed- context: ${!message.client.browserContext.isClosed()}; browser ${!message.client.browserContext.isClosed()}`);
-    //         await initialMessage.edit("żegnaj okrutny świecie")
-    //         throw error;
-    //     }
 }
