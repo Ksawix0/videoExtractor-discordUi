@@ -35,8 +35,7 @@ export async function extractInstagramUrl(context: BrowserContext, url: string):
         }
 
     });
-
-    console.log(`Error -has been closed- page: ${!page.isClosed()}`);
+    
     await page.goto(url);
     await new Promise(async (res) => {page.on('close', res)})
 
