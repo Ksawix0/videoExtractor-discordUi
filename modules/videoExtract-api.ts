@@ -6,13 +6,14 @@ import {fileURLToPath} from "node:url"
 import {Readable} from "stream"
 
 export interface videoUrls{
+    videoUrlHeader: [string, string][];
     videoUrl: string;
     audioUrl: string;
 }
 
 export async function extractInstagramUrl(context: BrowserContext, url: string): Promise<videoUrls> {
     // Setup
-    let output : videoUrls = {videoUrl: "", audioUrl: ""};
+    let output : videoUrls = {videoUrl: "", audioUrl: "", videoUrlHeader: []};
     let lastUrl: String = "";
 
     const page = await context.newPage();
@@ -43,6 +44,31 @@ export async function extractInstagramUrl(context: BrowserContext, url: string):
     })
 
     await page.goto(url);
+    await reqExtraction
+
+    await page.close();
+    return output;
+}
+
+export async function extractTiktokUrl(context: BrowserContext, url: string): Promise<videoUrls>{
+
+    let output : videoUrls = {videoUrl: "", audioUrl: "", videoUrlHeader: []};
+    const page = await context.newPage();
+
+    const reqExtraction =  new Promise((Resolve) => {
+        page.route( new RegExp("^.*webapp-prime\\.tiktok\\.com.*&mime_type=video_mp4.*") , async (route) => {
+            await route.abort()
+            output.videoUrlHeader = Object.entries(await route.request().allHeaders())
+            output.videoUrl = route.request().url()
+            Resolve("")
+        })
+    })
+
+    await page.route("**.css", (route) => {
+        route.abort()
+    })
+
+    await page.goto(url, {waitUntil: "commit"});
     await reqExtraction
 
     await page.close();
