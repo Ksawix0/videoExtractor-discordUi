@@ -2,6 +2,7 @@ import {Guild, SlashCommandBuilder} from 'discord.js';
 import {ChatInputCommandInteraction} from "discord.js";
 
 export const data= new SlashCommandBuilder().setName('server').setDescription('Provides information about the server.')
+    .setContexts(0)
 
 export async function execute(interaction : ChatInputCommandInteraction) {
     // interaction.guild is the object representing the Guild in which the command was run

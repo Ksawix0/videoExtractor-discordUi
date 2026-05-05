@@ -5,6 +5,7 @@ const confirmationResponse =  (await import('../../assets/confirmation-as-a-serv
 export const data = new ContextMenuCommandBuilder()
     .setName('requestDM')
     .setType(ApplicationCommandType.User)
+    .setContexts(1,2)
 export async function execute(interaction: UserContextMenuCommandInteraction) {
     await interaction.reply({content: "Wait a second", flags: MessageFlags.Ephemeral});
     await interaction.user.send(confirmationResponse[Math.floor(Math.random() * confirmationResponse.length)]?? "");

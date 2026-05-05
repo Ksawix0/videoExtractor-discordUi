@@ -3,6 +3,7 @@ import {ChatInputCommandInteraction} from "discord.js";
 import {GuildMember} from "discord.js";
 
 export const data = new SlashCommandBuilder().setName('user').setDescription('Provides information about the user.')
+    .setContexts(0)
 
 export async function execute(interaction: ChatInputCommandInteraction) {
     // interaction.user is the object representing the User who ran the command

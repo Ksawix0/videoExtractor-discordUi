@@ -79,9 +79,6 @@ const rest = new REST().setToken(process.env["DISCORD_TOKEN"]?? "");
     }
 })();
 
-client.once(Events.ClientReady, (readyClient : Client<true>) => {
-    console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-});
 
 client.on(Events.InteractionCreate, async (interaction) => {
     //? Chat commands handler
@@ -141,5 +138,9 @@ client.on(Events.MessageCreate, async (message) => {
          }
      }
 })
+
+client.once(Events.ClientReady, (clientReady : Client<true>) => {
+    console.log(`Ready! Logged in as ${clientReady.user.tag}`);
+});
 
 client.login(process.env.DISCORD_TOKEN);
